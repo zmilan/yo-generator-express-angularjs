@@ -1,0 +1,210 @@
+#!/bin/bash
+
+# Bash colors.
+BLACK=$(tput setaf 0)
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+LIME_YELLOW=$(tput setaf 190)
+POWDER_BLUE=$(tput setaf 153)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+BRIGHT=$(tput bold)
+NORMAL=$(tput sgr0)
+BLINK=$(tput blink)
+REVERSE=$(tput smso)
+UNDERLINE=$(tput smul)
+
+# Print text in different colors.
+function printError {
+    printf "${RED}$1${NORMAL}"
+}
+
+function printHeader {
+    printf "${YELLOW}$1${NORMAL}"
+}
+
+function printSuccess {
+    printf "${GREEN}$1${NORMAL}"
+}
+
+# Configuration flags.
+actual_step=0
+configure_bower=true
+configure_gem=true
+configure_heroku=true
+configure_npm=true
+configure_remote=true
+
+until [ -z $1 ]; do
+    case $1 in
+        no-bower) configure_bower=false; shift;;
+        no-gem) configure_gem=false; shift;;
+        no-heroku) configure_heroku=false; shift;;
+        no-npm) configure_npm=false; shift;;
+        no-remote) configure_remote=false; shift;;
+        (-- | -*) shift;;
+        (*) break;;
+    esac
+done
+
+# Execute a simple task.
+function executeTask {
+    # $1 = Task title.
+    # $2 = Task executer.
+    # $3 = Task executer success text.
+    # $4 = Task executer error text.
+
+    actual_step=`expr $actual_step + 1`
+    printHeader "\n${actual_step}- ${1}\n"
+
+    if $2; then
+        printSuccess "\n${3}\n"
+    else
+        printError "\nERROR: "
+        echo "${4}\n"
+        exit
+    fi
+}
+
+# Check if commands exist.
+function checkCommand {
+    # $1 = Command.
+    # $2 = Command error text.
+
+    printf "Checking ${1}: "
+    if which $1 > /dev/null 2>&1; then
+        printSuccess "Success.\n"
+    else
+        printError "${2}\n"
+        exit
+    fi
+}
+
+echo "\nPreparing enviromnent\n======================"
+
+# Check dependencies.
+actual_step=`expr $actual_step + 1`
+printHeader "\n${actual_step}- Checking commands\n-----------------------\n"
+
+checkCommand "heroku" "Heroku is not installed, please download the Heroku Toolbelt (https://toolbelt.heroku.com/) in order to configure Heroku."
+checkCommand "npm" "NPM is not installed, please go to (http://joyent.com/blog/installing-node-and-npm) and follow the instructions to install node and NPM."
+checkCommand "gem" "Bundle is not installed, please make sure that Ruby is configured on your system and run this file again."
+checkCommand "coffee" "CoffeeScript is not installed, go to (http://coffeescript.org/) and follow the instructions to install."
+checkCommand "compass" "Compass is not installed, run \`sudo gem install compass\` to install it."
+checkCommand "bower" "Bower is not installed, please go to (https://github.com/twitter/bower) and follow the instructions to install Bower."
+
+# Add the remote origin branch.
+if $configure_remote; then
+    actual_step=`expr $actual_step + 1`
+    printHeader "\n${actual_step}- GIT configuration\n-----------------------\n"
+
+    read -p "Do you want to configure a remote origin to store your code? (y/n): "
+    if [ $REPLY == 'y' ]
+    then
+        if git ls-remote origin > /dev/null 2>&1; then
+
+            # Remove cloned branch.
+            git remote rm origin >> /dev/null
+        else
+
+            # Init a git repository.
+            git init >> /dev/null
+        fi
+
+        # Create new remote branch.
+        read -p "What will be your remote origin?: "
+        git remote add origin $REPLY
+        printSuccess "Remote origin created successfully."
+    fi
+fi
+
+# Configure Heroku account.
+if $configure_heroku; then
+    actual_step=`expr $actual_step + 1`
+    printHeader "\n${actual_step}- Heroku configuration\n-----------------------\n"
+
+    # Validate if the heroku remote exists.
+    if git ls-remote heroku > /dev/null 2>&1; then
+        printSuccess "--> Heroku is already configured.\n"
+    else
+        read -p "There's not Heroku configuration. Do you want to use Heroku to deploy the application? (y/n): "
+        if [ $REPLY == 'y' ]; then
+
+            # Add Grunt buildpack to Heroku application.
+            function addHerokuBuildpack {
+                heroku config:add BUILDPACK_URL=https://github.com/toi-agency/heroku-buildpack-nodejs-grunt-compass
+            }
+
+            # If the user already created the Heroku app, then add it.
+            read -p "--> Did you already created the Heroku app? (y/n): "
+
+            if [ $REPLY == 'y' ]; then
+                function addHerokuUrl {
+                    git remote rm heroku > /dev/null 2>&1
+                    read -p "----> What is your application's git url?: "
+                    git remote add heroku $REPLY
+
+                    if git ls-remote heroku > /dev/null 2>&1; then
+                        printSuccess "------> SUCCESS! "
+                        echo "The remote was created successfully."
+                    else
+                        printError "------> ERROR: "
+                        echo "The remote url appears to be invalid!\n"
+                        addHerokuUrl
+                    fi
+                }
+
+                addHerokuUrl
+                addHerokuBuildpack
+
+            # If the user hasn't created the Heroku app, then create it.
+            else
+                function createHerokuApp {
+                    read -p "----> What will be your application's name?: "
+                    if heroku apps:create $REPLY; then
+                        printSuccess '------> The application was successfully created.'
+                        heroku_created=true
+                    else
+                        createHerokuApp
+                    fi
+                }
+
+                createHerokuApp
+                addHerokuBuildpack
+            fi
+        fi
+    fi
+fi
+
+# Install node packages.
+if $configure_npm; then
+    TASK_TITLE="Installing Node packages\n---------------------------"
+    TASK_EXECUTER="npm install"
+    TASK_EXECUTER_SUCCESS="NPM packages successfully installed.\n------------------------------------"
+    TASK_EXECUTER_ERROR="Something happened while installing NPM packages, please see the log."
+
+    executeTask "${TASK_TITLE}" "${TASK_EXECUTER}" "${TASK_EXECUTER_SUCCESS}" "${TASK_EXECUTER_ERROR}"
+fi
+
+# Install bower packages.
+if $configure_bower; then
+    TASK_TITLE="Installing Bower components\n------------------------------"
+    TASK_EXECUTER="bower install"
+    TASK_EXECUTER_SUCCESS="Bower components successfully installed.\n------------------------------------"
+    TASK_EXECUTER_ERROR="Bower is not installed, please go to (https://github.com/twitter/bower) and follow the instructions to install Bower."
+
+    executeTask "${TASK_TITLE}" "${TASK_EXECUTER}" "${TASK_EXECUTER_SUCCESS}" "${TASK_EXECUTER_ERROR}"
+fi
+
+# Install Ruby gems.
+if $configure_gem; then
+    TASK_TITLE="Installing Ruby gems\n------------------------------"
+    TASK_EXECUTER="bundle install"
+    TASK_EXECUTER_SUCCESS="Ruby gems successfully installed.\n---------------------------------"
+    TASK_EXECUTER_ERROR="Something happened while installing Ruby gems, please see the log."
+
+    executeTask "${TASK_TITLE}" "${TASK_EXECUTER}" "${TASK_EXECUTER_SUCCESS}" "${TASK_EXECUTER_ERROR}"
+fi

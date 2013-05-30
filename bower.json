@@ -1,0 +1,10 @@
+{
+  "name": "static-site-scaffolding",
+  "version": "0.0.0",
+  "dependencies": {
+    "sass-bootstrap": "~2.3.1",
+    "angular-unstable": "~1.1.5",
+    "angular-resource": "~1.0.7",
+    "showdown": "~0.3.1"
+  }
+}

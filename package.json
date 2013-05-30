@@ -1,0 +1,41 @@
+{
+  "name": "yo-generator-angularjs",
+  "version": "0.0.0",
+  "description": "Advanced AngularJS generator for Yeoman.",
+  "homepage": "https://github.com/toi-agency/yo-generator-angularjs",
+  "bugs": "https://github.com/toi-agency/yo-generator-angularjs/issues",
+  "author": "kevin-wolf",
+  "main": "node scripts/server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toi-agency/yo-generator-angularjs.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "license": "BSD",
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-contrib-compass": "~0.2.0",
+    "express": "~3.2.3",
+    "grunt-bower-task": "~0.2.2",
+    "grunt-contrib-livereload": "~0.1.2",
+    "grunt-coffeelint": "0.0.6",
+    "grunt-contrib-uglify": "~0.2.1",
+    "grunt-contrib-cssmin": "~0.6.0",
+    "grunt-usemin": "~0.1.12",
+    "grunt-contrib-htmlmin": "~0.1.3",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-ngmin": "0.0.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-angular-templates": "~0.3.6",
+    "gzippo": "~0.2.0"
+  },
+  "devDependencies": {
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-regarde": "~0.1.1",
+    "grunt-open": "~0.2.0"
+  }
+}

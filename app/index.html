@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myAwesomeApp">
+
+    <head>
+        <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Advanced AngularJS project generator.</title>
+
+        <!-- build:css styles/screen.min.css -->
+        <link rel="stylesheet" href="styles/screen.css">
+        <!-- endbuild -->
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="hero-unit">
+                <h2 ng-show="loading">Loading...</h2>
+                <ng-view></ng-view>
+            </div>
+        </div>
+
+        <!-- build:js scripts/app.min.js -->
+        <script src="lib/showdown/src/showdown.js"></script>
+        <script src="lib/angular-unstable/angular.min.js"></script>
+        <script src="lib/angular-resource/angular-resource.min.js"></script>
+        <script src="scripts/app.js"></script>
+
+        <!-- Please don't erase this line, this file will contain the inlined templates on the build.  -->
+        <script src="scripts/templates.js"></script>
+        
+        <script src="scripts/common/directives/TreeDirective.js"></script>
+        <script src="scripts/common/directives/MarkdownDirective.js"></script>
+        <script src="scripts/guide/services/GuideService.js"></script>
+        <script src="scripts/guide/controllers/GuideCtrl.js"></script>
+        <!-- endbuild -->
+    </body>
+
+</html>

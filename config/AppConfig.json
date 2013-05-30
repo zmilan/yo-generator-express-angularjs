@@ -1,0 +1,30 @@
+{
+    "app": {
+        "dev"          : ".dev",
+        "dist"         : ".dist",
+        "ngModule"     : "myAwesomeApp",
+        "src"          : "app",
+        "templatesSrc" : "templates"
+    },
+
+    "livereload": {
+        "files" : [ "{.dev,.dist,app}/**/*.html", "{.dev,.dist,app}/styles/{,*/}*.css", "{.dev,.dist,app}/scripts/{,*/}*.js" ],
+        "port"  : 1717
+    },
+
+    "scripts": {
+        "libraries" : [
+            "app/lib/angular-unstable/angular.min.js",
+            "app/lib/angular-resource/angular-resource.min.js"
+        ],
+        "src"       : "scripts"
+    },
+
+    "server": {
+        "port": 3000
+    },
+
+    "styles": {
+        "src"   : "styles"
+    }
+}

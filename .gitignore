@@ -1,0 +1,5 @@
+.dev
+.dist
+.sass-cache
+app/lib/
+node_modules/
