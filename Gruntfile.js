@@ -1,11 +1,7 @@
 'use strict';
 
 // LiveReload utilities.
-var path        = require('path'),
-    lrSnippet   = require('grunt-contrib-livereload/lib/utils').livereloadSnippet,
-    mountFolder = function(connect, dir) {
-        return connect['static'](dir);
-    };
+var path = require('path');
 
 module.exports = function(grunt) {
 
@@ -60,43 +56,6 @@ module.exports = function(grunt) {
             }
         },
 
-        // Launch web server.
-        connect: {
-
-            // Connect to development environment.
-            dev: {
-                options: {
-                    port       : process.env.PORT || '<%= AppConfig.server.port %>',
-                    middleware : function(connect) {
-                        return [
-                            lrSnippet,
-                            mountFolder(connect, grunt.template.process('<%= AppConfig.app.dev %>')),
-                            mountFolder(connect, grunt.template.process('<%= AppConfig.app.src %>')),
-
-                            // Enable directory listing.
-                            connect.directory(grunt.template.process('<%= AppConfig.app.dev %>')),
-                            connect.directory(grunt.template.process('<%= AppConfig.app.src %>'))
-                        ];
-                    }
-                }
-            },
-
-            // Connect to production environment.
-            dist: {
-                options: {
-                    port : process.env.PORT || '<%= AppConfig.server.port %>',
-                    middleware : function(connect) {
-                        return [
-                            mountFolder(connect, grunt.template.process('<%= AppConfig.app.dist %>')),
-
-                            // Enable directory listing.
-                            connect.directory(grunt.template.process('<%= AppConfig.app.dist %>'))
-                        ];
-                    }
-                }
-            }
-        },
-
         // Copy files to production folder.
         copy: {
             dev: {
@@ -129,6 +88,35 @@ module.exports = function(grunt) {
             }
         },
 
+        // Start ExpressJS server.
+        express: {
+
+            // Development environment.
+            dev: {
+                options: {
+                    bases   : [
+                        '<%= AppConfig.app.dev %>',
+                        '<%= AppConfig.app.src %>'
+                    ],
+                    debug   : true,
+                    monitor : {},
+                    port    : '<%= AppConfig.server.port %>',
+                    server  : path.resolve('./<%= AppConfig.server.src %>')
+                }
+            },
+
+            // Production environment.
+            dist: {
+                options: {
+                    bases   : [
+                        '<%= AppConfig.app.dist %>'
+                    ],
+                    port    : process.env.PORT || '<%= AppConfig.server.port %>',
+                    server  : path.resolve('./<%= AppConfig.server.src %>')
+                }
+            }
+        },
+
         // Minify HTML files.
         htmlmin: {
             dist: {
@@ -152,11 +140,6 @@ module.exports = function(grunt) {
                     }
                 ]
             }
-        },
-
-        // LiveReload configuration.
-        livereload: {
-            port: '<%= AppConfig.livereload.port %>'
         },
 
         // Generate anotations for angular injections.
@@ -221,7 +204,7 @@ module.exports = function(grunt) {
     // Load tasks.
     // -----------
 
-    https://github.com/ericclemmons/grunt-angular-templates
+    // https://github.com/ericclemmons/grunt-angular-templates
     grunt.loadNpmTasks('grunt-angular-templates');
 
     // https://github.com/yatskevich/grunt-bower-task
@@ -239,9 +222,6 @@ module.exports = function(grunt) {
     // https://github.com/gruntjs/grunt-contrib-concat
     grunt.loadNpmTasks('grunt-contrib-concat');
 
-    // https://github.com/gruntjs/grunt-contrib-connect
-    grunt.loadNpmTasks('grunt-contrib-connect');
-
     // https://github.com/gruntjs/grunt-contrib-copy
     grunt.loadNpmTasks('grunt-contrib-copy');
 
@@ -256,6 +236,9 @@ module.exports = function(grunt) {
 
     // https://github.com/gruntjs/grunt-contrib-uglify
     grunt.loadNpmTasks('grunt-contrib-uglify');
+
+    // https://github.com/blai/grunt-express
+    grunt.loadNpmTasks('grunt-express');
 
     // https://github.com/btford/grunt-ngmin
     grunt.loadNpmTasks('grunt-ngmin');
@@ -286,44 +269,18 @@ module.exports = function(grunt) {
 
     // Compress, concatenate, generate documentation and run unit tests.
     grunt.registerTask('build', [
-
-        // Clean dist folder.
         'clean:dist',
-
-        // Compile assets on dev folder.
         'compile',
-
-        // Copy all non-scripts and non-styles files from source to dist folder.
         'copy:dist',
-
-        // Copy JS files from source to dev folder.
         'copy:dev',
-
-        // Inline AngularJS templates.
         'ngtemplates',
-
-        // Prepare usemin task.
         'useminPrepare',
-
-        // Join all JS files.
         'concat',
-
-        // Compress all CSS files.
         'cssmin',
-
-        // Generate anotations for angular files.
         'ngmin',
-
-        // // Compress all JS files.
         'uglify',
-
-        // Use minified styles/scripts sources.
         'usemin',
-
-        // Compress HTML files.
         'htmlmin',
-
-        // Remove dev folder.
         'clean:dev'
     ]);
 
@@ -331,16 +288,15 @@ module.exports = function(grunt) {
     grunt.registerTask('dev', [
         'compile',
         'livereload-start',
-        'connect:dev',
+        'express:dev',
         'open',
         'regarde'
     ]);
 
     // Create build and then open it for preview.
     grunt.registerTask('dist', [
-        'build',
-        'open',
-        'connect:dist:keepalive'
+        'express:dist',
+        'express-keepalive'
     ]);
 
     // Compile assets for production on Heroku side.
