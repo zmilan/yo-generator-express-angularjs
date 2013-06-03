@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
 
         // Load folders configuration.
-        AppConfig: grunt.file.readJSON('./config/AppConfig.json'),
+        AppConfig: grunt.file.readJSON('./AppConfig.json'),
 
         // Install Bower dependencies.
         bower: {

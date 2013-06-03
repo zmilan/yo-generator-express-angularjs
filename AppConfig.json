@@ -3,19 +3,19 @@
         "dev"          : ".dev",
         "dist"         : ".dist",
         "ngModule"     : "myAwesomeApp",
-        "src"          : "app",
+        "src"          : "public",
         "templatesSrc" : "templates"
     },
 
     "livereload": {
-        "files" : [ "{.dev,.dist,app}/**/*.html", "{.dev,.dist,app}/styles/{,*/}*.css", "{.dev,.dist,app}/scripts/{,*/}*.js" ],
+        "files" : [ "{.dev,.dist,public}/**/*.html", "{.dev,.dist,public}/styles/{,*/}*.css", "{.dev,.dist,public}/scripts/{,*/}*.js" ],
         "port"  : 1717
     },
 
     "scripts": {
         "libraries" : [
-            "app/lib/angular-unstable/angular.min.js",
-            "app/lib/angular-resource/angular-resource.min.js"
+            "public/lib/angular-unstable/angular.min.js",
+            "public/lib/angular-resource/angular-resource.min.js"
         ],
         "src"       : "scripts"
     },

@@ -1,5 +1,5 @@
 .dev
 .dist
 .sass-cache
-app/lib/
+public/lib/
 node_modules/

@@ -1,5 +1,5 @@
 // Requires.
-var AppConfig = require('../config/AppConfig.json'),
+var AppConfig = require('../AppConfig.json'),
     express   = require('express'),
     gzippo    = require('gzippo');
 
