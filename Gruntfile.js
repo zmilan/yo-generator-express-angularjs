@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
 
         // Load folders configuration.
-        AppConfig: grunt.file.readJSON('./AppConfig.json'),
+        appConfig: grunt.file.readJSON('./appConfig.json'),
 
         // Install Bower dependencies.
         bower: {
@@ -24,10 +24,10 @@ module.exports = function(grunt) {
         // Clean folders before compile assets.
         clean:  {
             bower   : 'lib',
-            dev     : '<%= AppConfig.app.dev %>',
-            dist    : '<%= AppConfig.app.dist %>',
-            scripts : '<%= AppConfig.app.dev %>/<%= AppConfig.scripts.src %>',
-            styles  : '<%= AppConfig.app.dev %>/<%= AppConfig.styles.src %>'
+            dev     : '<%= appConfig.app.dev %>',
+            dist    : '<%= appConfig.app.dist %>',
+            scripts : '<%= appConfig.app.dev %>/<%= appConfig.scripts.src %>',
+            styles  : '<%= appConfig.app.dev %>/<%= appConfig.styles.src %>'
         },
 
         // Compile CoffeeScript.
@@ -36,8 +36,8 @@ module.exports = function(grunt) {
             // Compile Coffee for development environment.
             dev: {
                 expand : true,
-                cwd    : '<%= AppConfig.app.src %>/<%= AppConfig.scripts.src %>',
-                dest   : '<%= AppConfig.app.dev %>/<%= AppConfig.scripts.src %>',
+                cwd    : '<%= appConfig.app.src %>/<%= appConfig.scripts.src %>',
+                dest   : '<%= appConfig.app.dev %>/<%= appConfig.scripts.src %>',
                 src    : '**/*.coffee',
                 ext    : '.js'
             }
@@ -50,8 +50,8 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     basePath : '.',
-                    cssDir   : '<%= AppConfig.app.dev %>/<%= AppConfig.styles.src %>',
-                    sassDir  : '<%= AppConfig.app.src %>/<%= AppConfig.styles.src %>'
+                    cssDir   : '<%= appConfig.app.dev %>/<%= appConfig.styles.src %>',
+                    sassDir  : '<%= appConfig.app.src %>/<%= appConfig.styles.src %>'
                 }
             }
         },
@@ -61,8 +61,8 @@ module.exports = function(grunt) {
             dev: {
                 files: [
                     {
-                        cwd    : '<%= AppConfig.app.src %>',
-                        dest   : '<%= AppConfig.app.dev %>',
+                        cwd    : '<%= appConfig.app.src %>',
+                        dest   : '<%= appConfig.app.dev %>',
                         expand : true,
                         src    : [ '**/*' ]
                     }
@@ -72,16 +72,16 @@ module.exports = function(grunt) {
             dist: {
                 files: [
                     {
-                        cwd    : '<%= AppConfig.app.src %>',
-                        dest   : '<%= AppConfig.app.dist %>',
+                        cwd    : '<%= appConfig.app.src %>',
+                        dest   : '<%= appConfig.app.dist %>',
                         dot    : true,
                         expand : true,
                         src    : [
                             '**',
                             '!**/lib/**',
-                            '!**/<%= AppConfig.app.templatesSrc %>/**',
-                            '!**/<%= AppConfig.scripts.src %>/**',
-                            '!**/<%= AppConfig.styles.src %>/**'
+                            '!**/<%= appConfig.app.templatesSrc %>/**',
+                            '!**/<%= appConfig.scripts.src %>/**',
+                            '!**/<%= appConfig.styles.src %>/**'
                         ]
                     }
                 ]
@@ -95,13 +95,13 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     bases   : [
-                        '<%= AppConfig.app.dev %>',
-                        '<%= AppConfig.app.src %>'
+                        '<%= appConfig.app.dev %>',
+                        '<%= appConfig.app.src %>'
                     ],
                     debug   : true,
                     monitor : {},
-                    port    : '<%= AppConfig.server.port %>',
-                    server  : path.resolve('./<%= AppConfig.server.src %>')
+                    port    : '<%= appConfig.server.port %>',
+                    server  : path.resolve('./<%= appConfig.server.src %>')
                 }
             },
 
@@ -109,10 +109,10 @@ module.exports = function(grunt) {
             dist: {
                 options: {
                     bases   : [
-                        '<%= AppConfig.app.dist %>'
+                        '<%= appConfig.app.dist %>'
                     ],
-                    port    : process.env.PORT || '<%= AppConfig.server.port %>',
-                    server  : path.resolve('./<%= AppConfig.server.src %>')
+                    port    : process.env.PORT || '<%= appConfig.server.port %>',
+                    server  : path.resolve('./<%= appConfig.server.src %>')
                 }
             }
         },
@@ -134,8 +134,8 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand : true,
-                        cwd    : '<%= AppConfig.app.dist %>',
-                        dest   : '<%= AppConfig.app.dist %>',
+                        cwd    : '<%= appConfig.app.dist %>',
+                        dest   : '<%= appConfig.app.dist %>',
                         src    : '**/*.html'
                     }
                 ]
@@ -145,10 +145,10 @@ module.exports = function(grunt) {
         // Generate anotations for angular injections.
         ngmin: {
             dist: {
-                cwd    : '<%= AppConfig.app.dist %>/<%= AppConfig.scripts.src %>',
+                cwd    : '<%= appConfig.app.dist %>/<%= appConfig.scripts.src %>',
                 expand : true,
                 src    : [ '**/*.js' ],
-                dest   : '<%= AppConfig.app.dist %>/<%= AppConfig.scripts.src %>'
+                dest   : '<%= appConfig.app.dist %>/<%= appConfig.scripts.src %>'
             }
         },
 
@@ -156,47 +156,47 @@ module.exports = function(grunt) {
         ngtemplates: {
             dist: {
                 options: {
-                    base   : '<%= AppConfig.app.dev %>',
-                    module : '<%= AppConfig.app.ngModule %>'
+                    base   : '<%= appConfig.app.dev %>',
+                    module : '<%= appConfig.app.ngModule %>'
                 },
-                src  : '<%= AppConfig.app.dev %>/<%= AppConfig.app.templatesSrc %>/**/*.html',
-                dest : '<%= AppConfig.app.dev %>/<%= AppConfig.scripts.src %>/templates.js'
+                src  : '<%= appConfig.app.dev %>/<%= appConfig.app.templatesSrc %>/**/*.html',
+                dest : '<%= appConfig.app.dev %>/<%= appConfig.scripts.src %>/templates.js'
             }
         },
 
         // Open a web server with a given URL.
         open: {
             server: {
-                path: 'http://localhost:<%= AppConfig.server.port %>'
+                path: 'http://localhost:<%= appConfig.server.port %>'
             }
         },
 
         // Watch for changes in files and call a given task.
         regarde: {
             coffee: {
-                files : '<%= AppConfig.app.src %>/<%= AppConfig.scripts.src %>/**/*.coffee',
+                files : '<%= appConfig.app.src %>/<%= appConfig.scripts.src %>/**/*.coffee',
                 tasks : 'compile:coffee'
             },
             compass: {
-                files : '<%= AppConfig.app.src %>/<%= AppConfig.styles.src %>/**/*.{sass,scss}',
+                files : '<%= appConfig.app.src %>/<%= appConfig.styles.src %>/**/*.{sass,scss}',
                 tasks : 'compile:compass'
             },
             livereload: {
-                files : '<%= AppConfig.livereload.files %>',
+                files : '<%= appConfig.livereload.files %>',
                 tasks : 'livereload'
             }
         },
 
         // Use minified assets on HTML files depending on environment.
         usemin: {
-            html : [ '<%= AppConfig.app.dist %>/**/*.html' ]
+            html : [ '<%= appConfig.app.dist %>/**/*.html' ]
         },
 
         // Prepare usemin to compile assets in the specified order.
         useminPrepare: {
-            html    : '<%= AppConfig.app.dev %>/**/*.html',
+            html    : '<%= appConfig.app.dev %>/**/*.html',
             options : {
-                dest : '<%= AppConfig.app.dist %>'
+                dest : '<%= appConfig.app.dist %>'
             }
         }
     });

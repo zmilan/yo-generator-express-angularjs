@@ -1,31 +1,26 @@
-// Requires.
-var AppConfig = require('../AppConfig.json'),
-    express   = require('express'),
-    gzippo    = require('gzippo');
+// Module dependencies.
+// --------------------
+var express   = require('express');
 
-// Create express function.
-var app = express();
 
-// Create HTTP server object.
-var server = require('http').createServer(app);
+// Create express function and server variable.
+var app    = express(),
+    server = require('http').createServer(app);
 
-// Configuration for development environment.
-app.configure(function() {
 
-    // Enable Express logger.
-    app.use(express.logger());
+// ExpressJS configuration and environment settings.
+var env    = process.env.NODE_ENV || 'development',
+    config = require('./config/environment')[env];
 
-    // Enable gzip compression.
-    app.use(express.compress());
+require('./config/express')(express, app, env, config);
 
-    // Use LiveReload.
-    app.use(require('grunt-contrib-livereload/lib/utils').livereloadSnippet);
-});
+// Load application routes module.
+require('./config/routes')(app);
 
 // Export modules for Grunt task.
+// ------------------------------
 module.exports = server;
 
-// Override: Provide an "use" used by grunt-express.
 module.exports.use = function() {
     app.use.apply(app, arguments);
 }
